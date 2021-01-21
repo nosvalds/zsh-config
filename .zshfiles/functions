@@ -1,0 +1,18 @@
+# zsh custom functions
+
+hw () {
+  echo "Hello World"
+}
+
+# hub wrapper for renaming master branch to main
+function hub() {
+  if [[ "$1" == "default-branch" && "$@" != *"--help"* ]]; then
+    local BRANCH="${2:-main}"
+    git pull origin master 2>/dev/null
+    git checkout -b "$BRANCH" 2>/dev/null || git checkout "$BRANCH"
+    git push origin "$BRANCH:$BRANCH" 1>/dev/null
+    hub api repos/{owner}/{repo} -X PATCH -F default_branch="$BRANCH" 1> /dev/null
+  else
+    command hub "$@"
+  fi
+}
